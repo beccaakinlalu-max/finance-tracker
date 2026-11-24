@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Finance Tracker</title>
+</head>
+<body>
+  <h1>Finance Tracker</h1>
+
+  <form id="txForm">
+    <input id="amount" type="number" inputmode="decimal" placeholder="Amount (₦)" required>
+    <select id="type">
+      <option value="expense">Expense</option>
+      <option value="income">Income</option>
+    </select>
+    <input id="category" type="text" placeholder="Category (e.g. Food)" required>
+    <button type="submit">Add</button>
+  </form>
+<p id="summary"></p>
+  <ul id="list"></ul>
+<script>
+  const form = document.getElementById('txForm');
+  const list = document.getElementById('list');
+const summary = document.getElementById('summary'); 
+  let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+
+  function save() {
+    localStorage.setItem('transactions', JSON.stringify(transactions));
+  }
+
+  
+    function show() {
+  list.innerHTML = '';
+  let income = 0, expense = 0;
+  transactions.forEach(function (t) {
+    if (t.type === 'income') income += t.kobo;
+    else expense += t.kobo;
+    const li = document.createElement('li');
+    li.textContent = t.type + ': ₦' + (t.kobo / 100).toLocaleString() + ' - ' + t.category;
+    list.appendChild(li);
+  });
+  const fmt = function (k) { return '₦' + (k / 100).toLocaleString(); };
+  summary.textContent = 'Income: ' + fmt(income) +
+    ' | Expenses: ' + fmt(expense) +
+    ' | Balance: ' + fmt(income - expense);
+}
+  
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    const amount = parseFloat(document.getElementById('amount').value);
+    if (!(amount > 0)) return;
+    transactions.push({
+      id: Date.now(),
+      kobo: Math.round(amount * 100),
+      type: document.getElementById('type').value,
+      category: document.getElementById('category').value.trim()
+    });
+    save();
+    show();
+    form.reset();
+  });
+
+  show();
+</script>
+</body>
