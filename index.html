@@ -31,6 +31,9 @@
   li { background: var(--card); padding: 12px 14px; border-radius: 12px; margin-bottom: 8px; box-shadow: var(--shadow); border-left: 5px solid var(--muted); }
   li.income { border-left-color: var(--income); }
   li.expense { border-left-color: var(--expense); }
+li { display: flex; justify-content: space-between; align-items: center; }
+.del { background: transparent; color: var(--muted); padding: 4px 10px; box-shadow: none; }
+.del:hover { color: var(--expense); transform: none; }
 </style>
 </head>
 <body>
@@ -83,7 +86,17 @@ toggle.addEventListener('click', function () {
     const li = document.createElement('li');
   li.className = t.type;
     li.textContent = t.type + ': ₦' + (t.kobo / 100).toLocaleString() + ' - ' + t.category;
-    list.appendChild(li);
+    const del = document.createElement('button');
+del.textContent = '✕';
+del.className = 'del';
+del.setAttribute('aria-label', 'Delete');
+del.addEventListener('click', function () {
+  transactions = transactions.filter(function (x) { return x.id !== t.id; });
+  save();
+  show();
+});
+li.appendChild(del);
+list.appendChild(li);
   });
   const fmt = function (k) { return '₦' + (k / 100).toLocaleString(); };
   summary.textContent = 'Income: ' + fmt(income) +
